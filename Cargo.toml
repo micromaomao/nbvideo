@@ -1,0 +1,7 @@
+[package]
+name = "nbvideo"
+version = "0.1.0"
+authors = ["Mao Wtm <m@maowtm.org>"]
+edition = "2018"
+
+[dependencies]
