@@ -78,7 +78,7 @@ impl From<DiscreteVec2f> for (f32, f32) {
 
 impl Hash for DiscreteVec2f {
 	fn hash<H: Hasher>(&self, state: &mut H) {
-		let (ix, iy) = (self.x() * self.step, self.y() * self.step);
+		let (ix, iy) = (self.x() / self.step, self.y() / self.step);
 		const EPLISON: f32 = 1e-10;
 		if (ix - ix.round()).abs() > EPLISON || (iy - iy.round()).abs() > EPLISON {
 			unreachable!();
@@ -252,4 +252,19 @@ fn test_discrete_2f() {
 	}, DiscreteVec2f{
 		inner: Vec2f(1.5f32, 0.5f32), step: 0.25f32
 	});
+}
+
+#[test]
+fn test_discrete_vector_hashmap() {
+	use std::collections::HashMap;
+	let mut hm = HashMap::with_capacity(3);
+	hm.insert(DiscreteVec2f::new((1.49f32, 1.51f32), 0.5f32), 0);
+	hm.insert(DiscreteVec2f::new((2.0f32, 1.5f32), 0.5f32), 1);
+	hm.insert(DiscreteVec2f::new((2.0f32, -2.0f32), 0.5f32), -1);
+
+	assert_eq!(hm.len(), 3);
+	assert_eq!(hm.get(&DiscreteVec2f::new((2.0f32, -2.0f32), 0.5f32)), Some(&-1));
+	assert_eq!(hm.get(&DiscreteVec2f::new((2.0f32, 1.49f32), 0.5f32)), Some(&1));
+	assert_eq!(hm.get(&DiscreteVec2f::new((1.5f32, 1.5f32), 0.5f32)), Some(&0));
+	assert_eq!(hm.get(&DiscreteVec2f::new((3.0f32, 1.5f32), 0.5f32)), None);
 }
